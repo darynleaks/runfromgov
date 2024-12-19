@@ -1,0 +1,45 @@
+# fly.toml app configuration file generated for vpn-still-fog-975 on 2024-12-19T18:28:54+05:00
+app = 'vpn-still-fog-975'
+primary_region = 'fra'
+
+[build]
+  dockerfile = './Dockerfile'  # Use your custom Dockerfile for WireGuard + MTProtoProxy
+[env]
+  LOG_CONFS = 'true'
+  PEERDNS = 'auto'
+  PEERS = '1'
+  PGID = '1000'
+  PUID = '1000'
+  SERVERPORT = '51820'
+  SERVERURL = 'vpn-still-fog-975.fly.dev'
+[[mounts]]
+  source = 'config'
+  destination = '/config'
+
+[[services]]
+  # WireGuard service
+  protocol = 'udp'
+  internal_port = 51820
+  [[services.ports]]
+    port = 51820
+
+  [services.concurrency]
+    type = 'connections'
+    hard_limit = 25
+    soft_limit = 20
+
+[[services]]
+  # MTProtoProxy service
+  protocol = 'tcp'
+  internal_port = 2525
+  [[services.ports]]
+    port = 2525
+
+[[services]]
+  # MTProtoProxy service
+  protocol = 'tcp'
+  internal_port = 443
+  [[services.ports]]
+    port = 443
+[[vm]]
+  size = 'shared-cpu-1x'
